@@ -14,7 +14,9 @@
   "dependencies": {
     "aws-sdk": "^2.364.0",
     "claudia-api-builder": "^4.1.1",
+    "recastai": "^4.0.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "superagent": "^4.0.0"
   }
 }
