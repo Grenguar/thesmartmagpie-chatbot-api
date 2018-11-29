@@ -10,11 +10,9 @@ module.exports = api;
 
 api.post('/translate', (req, res) => {
 	const originalMessage = req.body.nlp.source;
-	const conversationId = req.body.conversation.id;
-
-	let testString = 'Jag älskar banana';
 	return getTranslatedMessage(originalMessage)
-		.then(result => replyObject(result));
+		.then(translateMessage => request.analyseText(translateMessage))
+		.then(analysed => replyObject(returnReplyAfterAnalyse(analysed)));
 },{
   success: { contentType: 'application/json' },
   error: { code: 500 }
@@ -42,10 +40,6 @@ function getTranslatedMessage(message) {
 	return result;
 }
 
-function getMessage(message) {
-	return message;
-}
-
 function replyObject(message) {
 	return {
 		"replies": [
@@ -54,5 +48,16 @@ function replyObject(message) {
 				"content": message
 			}
 		]
+	}
+}
+
+function returnReplyAfterAnalyse(message) {
+	const response = message.raw;
+	let intentsArray = response.intents;
+	if (intentsArray.length == 0) {
+		return 'I will forward you to the agent';
+	} else {
+		intentsArray.sort((i1, i2) => i2.confidence - i1.confidence);
+		return 'You mean: ' + intentsArray[0].slug;
 	}
 }
