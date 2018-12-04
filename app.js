@@ -5,6 +5,7 @@ const ApiBuilder = require('claudia-api-builder'),
 	BOT_TOKEN = process.env.BOT_TOKEN,
 	recastai = require('recastai').default,
 	request = new recastai.request(BOT_TOKEN, 'en');
+const infoMap = require("./datamap.js");
 
 module.exports = api;
 
@@ -29,8 +30,7 @@ function getTranslatedMessage(message) {
 			if (err) {
 				console.log(err, err.stack);
 				reject(err);
-			}
-			else {
+			} else {
 				console.log(data);
 				resolve(data.TranslatedText);
 			}
@@ -58,6 +58,6 @@ function returnReplyAfterAnalyse(message) {
 		return 'I will forward you to the agent';
 	} else {
 		intentsArray.sort((i1, i2) => i2.confidence - i1.confidence);
-		return 'You mean: ' + intentsArray[0].slug;
+		return infoMap[intentsArray[0].slug];
 	}
 }
