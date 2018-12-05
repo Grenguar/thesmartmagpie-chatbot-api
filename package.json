@@ -12,7 +12,7 @@
   "author": "Igor Soroka",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.364.0",
+    "aws-sdk": "^2.370.0",
     "claudia-api-builder": "^4.1.1",
     "recastai": "^4.0.0",
     "request": "^2.88.0",

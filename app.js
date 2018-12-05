@@ -11,20 +11,21 @@ module.exports = api;
 
 api.post('/translate', (req, res) => {
 	const originalMessage = req.body.nlp.source;
-	return getTranslatedMessage(originalMessage)
-		.then(translateMessage => request.analyseText(translateMessage))
-		.then(analysed => replyObject(returnReplyAfterAnalyse(analysed)));
+	return getTranslatedMessage(originalMessage, 'auto', 'en')
+		.then(translatedData => Promise.all([request.analyseText(translatedData.TranslatedText), translatedData.SourceLanguageCode]))
+		.then(values => getTranslatedMessage(returnReplyAfterAnalyse(values[0]), 'en', values[1]))
+		.then(translatedReply => replyObject(translatedReply.TranslatedText));
 },{
   success: { contentType: 'application/json' },
   error: { code: 500 }
 });
 
-function getTranslatedMessage(message) {
+function getTranslatedMessage(message, sourceLang, targetLang) {
 	let result = new Promise(function(resolve, reject){
 		let params = {
 			'Text': message,
-			'SourceLanguageCode': 'auto', 
-			'TargetLanguageCode': 'en',
+			'SourceLanguageCode': sourceLang, 
+			'TargetLanguageCode': targetLang,
 		};
 		translate.translateText(params, function(err, data) {
 			if (err) {
@@ -32,7 +33,7 @@ function getTranslatedMessage(message) {
 				reject(err);
 			} else {
 				console.log(data);
-				resolve(data.TranslatedText);
+				resolve(data);
 			}
 				
 		});
