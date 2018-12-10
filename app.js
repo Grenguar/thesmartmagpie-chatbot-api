@@ -56,18 +56,25 @@ function getTranslatedAnswerToUser(intent, language) {
 			":intent" : intent
 		}
 	};
-	return new Promise(function(resolve, reject) {
+	let dbResponse = new Promise(function(resolve, reject) {
 		docClient.query(params, function(err, data) {
 			if (err) {
 				console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
-				reject(err)
+				reject(err);
 			} else {
-				let translatedAnswerFromdb = data.Items[0];
-				console.log("Query succeeded. Data: " + JSON.stringify(translatedAnswerFromdb));
-				resolve(translatedAnswerFromdb[languageToQueryFromDb]);
+				let responseFromDb = data.Items[0];
+				console.log("Query succeeded. Data: " + JSON.stringify(responseFromDb));
+				resolve(responseFromDb[languageToQueryFromDb]);
 			}
 		});
 	});
+	if (language !== 'en' && !supportedLanguage) {
+		//Unsupported language branch is not working properly - it returns undefined.
+		let transMsg = getTranslatedMessage(dbResponse, fallbackLanguage, language);
+		return transMsg.TranslatedText;
+	} else {
+		return dbResponse;
+	}
 }
 
 function supportedLanguageByDb(language) {
