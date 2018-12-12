@@ -9,20 +9,21 @@ const ApiBuilder = require('claudia-api-builder'),
 
 module.exports = api;
 
-api.post('/translate', (req, res) => {
+api.post('/translate', async (req, res) => {
 	'use strict';
 	const originalMessage = req.body.nlp.source;
-	return getTranslatedMessage(originalMessage, 'auto', 'en')
-		.then(translatedData => Promise.all([request.analyseText(translatedData.TranslatedText), translatedData.SourceLanguageCode]))
-		.then(values => getTranslatedAnswerToUser(getIntentFromEngMessage(values[0]), values[1]))
-		.then(translatedReply => replyObject(translatedReply));
+	const translatedMessageObj = await getTranslatedMessage(originalMessage, 'auto', 'en');
+	const analysedText = await request.analyseText(translatedMessageObj.TranslatedText);
+	const intentFromtranslatedMessage = await getIntentFromEngMessage(analysedText);
+	const responseFromAnswerDb = await getTranslatedAnswerToUser(intentFromtranslatedMessage, translatedMessageObj.SourceLanguageCode);
+	return replyObject(responseFromAnswerDb);
 },{
   success: { contentType: 'application/json' },
   error: { code: 500 }
 });
 
 function getTranslatedMessage(message, sourceLang, targetLang) {
-	return result = new Promise(function(resolve, reject){
+	return result = new Promise(function(resolve, reject) {
 		let params = {
 			Text : message,
 			SourceLanguageCode : sourceLang, 
@@ -68,17 +69,11 @@ function getTranslatedAnswerToUser(intent, language) {
 			}
 		});
 	});
-	if (language !== 'en' && !supportedLanguage) {
-		//Unsupported language branch is not working properly - it returns undefined.
-		let transMsg = getTranslatedMessage(dbResponse, fallbackLanguage, language);
-		return transMsg.TranslatedText;
-	} else {
-		return dbResponse;
-	}
+	return dbResponse;
 }
 
 function supportedLanguageByDb(language) {
-	return language === "sv" || language === "ru" || language === "fi";
+	return language === "en" || language === "sv" || language === "ru" || language === "fi";
 }
 
 function getIntentFromEngMessage(message) {

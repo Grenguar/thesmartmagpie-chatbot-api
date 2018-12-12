@@ -5,18 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update": "claudia update",
+    "update prod": "claudia update",
+    "update dev": "claudia update --version development",
     "deploy": "claudia create --region eu-west-1 --api-module app"
   },
   "keywords": [],
   "author": "Igor Soroka",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.370.0",
+    "aws-sdk": "^2.374.0",
     "claudia-api-builder": "^4.1.1",
-    "recastai": "^4.0.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.2",
-    "superagent": "^4.0.0"
+    "recastai": "^4.0.0"
   }
 }
