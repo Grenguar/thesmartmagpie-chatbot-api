@@ -13,10 +13,16 @@ api.post('/translate', async (req, res) => {
 	'use strict';
 	const originalMessage = req.body.nlp.source;
 	const translatedMessageObj = await getTranslatedMessage(originalMessage, 'auto', 'en');
+	const originalMsgLanguage = translatedMessageObj.SourceLanguageCode;
 	const analysedText = await request.analyseText(translatedMessageObj.TranslatedText);
 	const intentFromtranslatedMessage = await getIntentFromEngMessage(analysedText);
-	const responseFromAnswerDb = await getTranslatedAnswerToUser(intentFromtranslatedMessage, translatedMessageObj.SourceLanguageCode);
-	return replyObject(responseFromAnswerDb);
+	const responseFromDb = await getTranslatedAnswerToUser(intentFromtranslatedMessage, originalMsgLanguage);
+	if (supportedLanguageByDb(originalMsgLanguage)) {
+		return replyObject(responseFromDb);
+	} else {
+		const translatedBotAnswer = await getTranslatedMessage(responseFromDb, 'en', originalMsgLanguage);
+		return replyObject(translatedBotAnswer.TranslatedText);
+	}
 },{
   success: { contentType: 'application/json' },
   error: { code: 500 }
