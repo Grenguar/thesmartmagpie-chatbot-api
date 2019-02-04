@@ -1,1 +1,2 @@
-###Chatbot api using serverless functions for bots powered RecastAI
+### Chatbot api
+It is using serverless functions for bots powered RecastAI
