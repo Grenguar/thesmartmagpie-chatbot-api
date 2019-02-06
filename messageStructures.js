@@ -17,7 +17,7 @@ module.exports = {
           type: "quickReplies",
           content: {
             title: title,
-            buttons: [buttons]
+            buttons: buttons
           }
         }
       ]
@@ -53,7 +53,7 @@ module.exports = {
           type: "buttons",
           content: {
             title: title,
-            buttons: [buttons]
+            buttons: buttons
           }
         }
       ]
@@ -66,13 +66,19 @@ module.exports = {
    - phone_number
   */
   buttonObj: function(title, type, value) {
+    if (type === "") {
+      return {
+        title: title,
+        value: value
+      };
+    }
     return {
       title: title,
       type: type,
       value: value
     };
   },
-
+  //https://cai.tools.sap/docs/concepts/structured-messages
   carouselReply: function(title, subtitle, imageUrl, buttons) {
     return {
       replies: [
@@ -83,7 +89,7 @@ module.exports = {
               title: title,
               subtitle: subtitle,
               imageUrl: imageUrl,
-              buttons: [buttons]
+              buttons: buttons
             }
           ]
         }
