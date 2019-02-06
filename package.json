@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "update prod": "claudia update",
     "update dev": "claudia update --version development",
-    "deploy": "claudia create --region eu-west-1 --api-module app"
+    "create": "claudia create --region us-east-1 --api-module index --policies policies",
+    "deploy": "claudia update",
+    "reconfigure prod": "claudia update --set-env-from-json .env.json",
+    "reconfigure dev": "claudia update --version development --set-env-from-json .env.json"
   },
   "keywords": [],
   "author": "Igor Soroka",
