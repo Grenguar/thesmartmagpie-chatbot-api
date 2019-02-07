@@ -5,7 +5,8 @@ const ApiBuilder = require("claudia-api-builder"),
   recastai = require("recastai").default,
   request = new recastai.request(process.env.BOT_TOKEN, "en"),
   docClient = new AWS.DynamoDB.DocumentClient(),
-  messageStructures = require("./messageStructures.js");
+  messageStructures = require("./src/messageStructures.js"),
+  demoCarousel = require("./src/demoCarousel.js");
 
 module.exports = api;
 
@@ -31,6 +32,13 @@ api.post(
       originalMsgLanguage
     );
     if (supportedLanguageByDb(originalMsgLanguage)) {
+      if (intentFromtranslatedMessage === "demo") {
+        let messages = [
+          messageStructures.textMessageObj(responseFromDb),
+          demoCarousel.returnCarouselObj()
+        ];
+        return messageStructures.customContentReply(messages);
+      }
       return messageStructures.textMessageReply(responseFromDb);
     } else {
       const translatedBotAnswer = await getTranslatedMessage(
@@ -112,7 +120,7 @@ function getIntentFromEngMessage(message) {
   const response = message.raw;
   let intentsArray = response.intents;
   if (intentsArray.length == 0) {
-    return "agent";
+    return "demo";
   } else {
     intentsArray.sort((i1, i2) => i2.confidence - i1.confidence);
     return intentsArray[0].slug;

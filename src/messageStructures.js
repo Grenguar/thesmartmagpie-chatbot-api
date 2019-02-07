@@ -1,4 +1,17 @@
 module.exports = {
+  customContentReply: function(customContentArray) {
+    return {
+      replies: customContentArray
+    };
+  },
+
+  textMessageObj: function(message) {
+    return {
+      type: "text",
+      content: message
+    };
+  },
+
   textMessageReply: function(message) {
     return {
       replies: [
@@ -78,6 +91,16 @@ module.exports = {
       value: value
     };
   },
+
+  cardObj: function(title, subtitle, imageUrl, buttons) {
+    return {
+      title: title,
+      subtitle: subtitle,
+      imageUrl: imageUrl,
+      buttons: buttons
+    };
+  },
+
   //https://cai.tools.sap/docs/concepts/structured-messages
   carouselReply: function(title, subtitle, imageUrl, buttons) {
     return {
