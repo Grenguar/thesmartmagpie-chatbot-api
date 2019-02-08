@@ -118,6 +118,9 @@ function getIntentFromEngMessage(message) {
     return "repeat";
   } else {
     intentsArray.sort((i1, i2) => i2.confidence - i1.confidence);
+    if (intentsArray[0].slug === "start") {
+      return "demo";
+    }
     return intentsArray[0].slug;
   }
 }
