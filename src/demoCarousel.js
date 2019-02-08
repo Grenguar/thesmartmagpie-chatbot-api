@@ -1,5 +1,5 @@
 module.exports = {
-  returnCarouselObj: function() {
+  returnCarouselObj: function(language) {
     const messageStructures = require("./messageStructures.js");
     let buttonsTickets = [
         messageStructures.buttonObj(
@@ -43,7 +43,7 @@ module.exports = {
       cardAskMe = messageStructures.cardObj(
         "Ask me",
         "Write a free-text message to me",
-        "",
+        "https://medias2.prestastore.com/835054-pbig/chat-bot-for-social-networking.jpg",
         []
       );
     const carousel = {

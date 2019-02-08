@@ -5,8 +5,7 @@ const ApiBuilder = require("claudia-api-builder"),
   recastai = require("recastai").default,
   request = new recastai.request(process.env.BOT_TOKEN, "en"),
   docClient = new AWS.DynamoDB.DocumentClient(),
-  messageStructures = require("./src/messageStructures.js"),
-  demoCarousel = require("./src/demoCarousel.js");
+  messageStructures = require("./src/messageStructures.js");
 
 module.exports = api;
 
@@ -32,12 +31,8 @@ api.post(
       originalMsgLanguage
     );
     if (supportedLanguageByDb(originalMsgLanguage)) {
-      if (intentFromtranslatedMessage === "demo") {
-        let messages = [
-          messageStructures.textMessageObj(responseFromDb),
-          demoCarousel.returnCarouselObj()
-        ];
-        return messageStructures.customContentReply(messages);
+      if (isJsonFormattedAnswer(intentFromtranslatedMessage)) {
+        return messageStructures.customContentReply(JSON.parse(responseFromDb));
       }
       return messageStructures.textMessageReply(responseFromDb);
     } else {
@@ -46,9 +41,11 @@ api.post(
         "en",
         originalMsgLanguage
       );
-      return messageStructures.textMessageReply(
-        translatedBotAnswer.TranslatedText
-      );
+      const translatedText = translatedBotAnswer.TranslatedText;
+      if (isJsonFormattedAnswer(intentFromtranslatedMessage)) {
+        return messageStructures.customContentReply(JSON.parse(responseFromDb));
+      }
+      return messageStructures.textMessageReply(translatedText);
     }
   },
   {
@@ -69,7 +66,6 @@ function getTranslatedMessage(message, sourceLang, targetLang) {
         console.log(err, err.stack);
         reject(err);
       } else {
-        console.log("Translated data from: " + JSON.stringify(data));
         resolve(data);
       }
     });
@@ -99,7 +95,6 @@ function getTranslatedAnswerToUser(intent, language) {
         reject(err);
       } else {
         let responseFromDb = data.Items[0];
-        console.log("Query succeeded. Data: " + JSON.stringify(responseFromDb));
         resolve(responseFromDb[languageToQueryFromDb]);
       }
     });
@@ -120,9 +115,13 @@ function getIntentFromEngMessage(message) {
   const response = message.raw;
   let intentsArray = response.intents;
   if (intentsArray.length == 0) {
-    return "demo";
+    return "repeat";
   } else {
     intentsArray.sort((i1, i2) => i2.confidence - i1.confidence);
     return intentsArray[0].slug;
   }
+}
+
+function isJsonFormattedAnswer(intent) {
+  return intent === "demo" || intent === "repeat";
 }
